@@ -3,5 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Conversational business intelligence agent for monday.com boards",
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": "20.x"
+  }
 }
