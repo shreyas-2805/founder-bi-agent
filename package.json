@@ -4,6 +4,10 @@
   "private": true,
   "description": "Conversational business intelligence agent for monday.com boards",
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "groq-sdk": "^1.5.0"
   }
 }

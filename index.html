@@ -1,46 +1,1754 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Founder BI</title>
-    <style>
-      :root { font-family: Inter, system-ui, sans-serif; color: #172554; background: #f8fafc; }
-      body { margin: 0; min-height: 100vh; background: linear-gradient(120deg,#eff6ff,#f8fafc 45%,#ecfdf5); }
-      main { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: 54px 0; }
-      header { margin-bottom: 25px; } h1 { font-size: clamp(2rem,5vw,3.5rem); margin: 0; letter-spacing:-.04em; }
-      header p { color:#475569; font-size:1.1rem; max-width:620px; line-height:1.6; }
-      .card { background:white; border:1px solid #dbeafe; border-radius:20px; box-shadow:0 18px 45px #1e3a5f12; padding:22px; }
-      #conversation { min-height:210px; display:grid; gap:14px; margin-bottom:18px; }
-      .bubble { padding:15px 17px; border-radius:14px; line-height:1.55; white-space:pre-wrap; max-width:88%; }
-      .assistant { background:#eff6ff; color:#1e3a8a; } .user { background:#172554; color:white; justify-self:end; }
-      form { display:flex; gap:10px; } input { flex:1; border:1px solid #94a3b8; padding:15px; border-radius:12px; font:inherit; }
-      button { border:0; background:#2563eb; color:white; border-radius:12px; padding:0 19px; cursor:pointer; font:600 1rem inherit; }
-      button:hover { background:#1d4ed8; } button:disabled { opacity:.6; cursor:wait; }
-      .prompts { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0; } .prompts button { background:#f1f5f9; color:#334155; padding:9px 11px; font-size:.86rem; }
-      #quality { color:#64748b; font-size:.82rem; margin-top:14px; } .error { background:#fef2f2; color:#991b1b; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <header><p>Live monday.com intelligence</p><h1>Founder BI</h1><p>Ask a business question across the Deals and Work Orders boards. Your data is read live and never changed.</p></header>
-      <section class="card">
-        <div id="conversation"><div class="bubble assistant">What would you like to know? Try a suggested question below.</div></div>
-        <form id="chat-form"><input id="question" placeholder="How is our energy-sector pipeline this quarter?" autocomplete="off" /><button id="send" type="submit">Ask</button></form>
-        <div class="prompts">
-          <button type="button" data-question="How is our pipeline looking for the energy sector this quarter?">Energy pipeline</button>
-          <button type="button" data-question="Which deals appear to be at risk and why?">Deals at risk</button>
-          <button type="button" data-question="Which work orders need leadership attention?">Work order risks</button>
-          <button type="button" data-question="Create a concise leadership update across sales and operations.">Leadership update</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Founder BI</title>
+
+  <style>
+    :root {
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: #172554;
+      background: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      background:
+        linear-gradient(
+          120deg,
+          #eff6ff,
+          #f8fafc 45%,
+          #ecfdf5
+        );
+    }
+
+    main {
+      width: min(
+        1200px,
+        calc(100% - 32px)
+      );
+
+      margin: 0 auto;
+
+      padding: 45px 0 70px;
+    }
+
+    header {
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      margin: 0;
+
+      font-size:
+        clamp(
+          2.4rem,
+          5vw,
+          4rem
+        );
+
+      letter-spacing: -0.05em;
+    }
+
+    header p {
+      color: #475569;
+
+      font-size: 1.05rem;
+
+      max-width: 720px;
+
+      line-height: 1.6;
+
+      margin: 8px 0 0;
+    }
+
+    .eyebrow {
+      color: #2563eb;
+
+      font-size: 0.8rem;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.12em;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-title {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 15px;
+
+      margin-bottom: 12px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+
+      font-size: 1.25rem;
+    }
+
+    .muted {
+      color: #64748b;
+
+      font-size: 0.85rem;
+    }
+
+    /* KPI CARDS */
+
+    .kpis {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          4,
+          minmax(0, 1fr)
+        );
+
+      gap: 14px;
+    }
+
+    .kpi {
+      background: white;
+
+      border:
+        1px solid
+        #dbeafe;
+
+      border-radius: 16px;
+
+      padding: 20px;
+
+      box-shadow:
+        0 10px 30px
+        rgba(30, 58, 95, 0.06);
+    }
+
+    .kpi-label {
+      color: #64748b;
+
+      font-size: 0.85rem;
+
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 1.55rem;
+
+      font-weight: 750;
+
+      letter-spacing: -0.03em;
+    }
+
+    .kpi-sub {
+      margin-top: 6px;
+
+      color: #94a3b8;
+
+      font-size: 0.78rem;
+    }
+
+    /* GRID */
+
+    .two-column {
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(300px, 0.8fr);
+
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+
+      border:
+        1px solid
+        #dbeafe;
+
+      border-radius: 18px;
+
+      box-shadow:
+        0 12px 35px
+        rgba(30, 58, 95, 0.06);
+
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 20px;
+
+      border-bottom:
+        1px solid #e2e8f0;
+    }
+
+    .card-header h3 {
+      margin: 0;
+
+      font-size: 1rem;
+    }
+
+    .card-body {
+      padding: 18px 20px;
+    }
+
+    /* TABLE */
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+
+      border-collapse: collapse;
+
+      font-size: 0.88rem;
+    }
+
+    th {
+      text-align: left;
+
+      color: #64748b;
+
+      font-weight: 650;
+
+      background: #f8fafc;
+
+      padding: 11px 14px;
+
+      border-bottom:
+        1px solid #e2e8f0;
+
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+
+      border-bottom:
+        1px solid #f1f5f9;
+
+      color: #334155;
+
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .number {
+      text-align: right;
+    }
+
+    /* SECTOR BARS */
+
+    .sector-row {
+      margin-bottom: 18px;
+    }
+
+    .sector-top {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      margin-bottom: 6px;
+
+      font-size: 0.86rem;
+    }
+
+    .sector-name {
+      font-weight: 650;
+    }
+
+    .sector-value {
+      color: #64748b;
+    }
+
+    .bar {
+      height: 8px;
+
+      background: #e2e8f0;
+
+      border-radius: 999px;
+
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+
+      background: #2563eb;
+
+      border-radius: inherit;
+    }
+
+    /* RISK */
+
+    .risk-list {
+      display: grid;
+
+      gap: 10px;
+    }
+
+    .risk-item {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 15px;
+
+      padding: 13px;
+
+      background: #f8fafc;
+
+      border-radius: 12px;
+    }
+
+    .risk-name {
+      font-weight: 650;
+    }
+
+    .risk-detail {
+      color: #64748b;
+
+      font-size: 0.8rem;
+
+      margin-top: 3px;
+    }
+
+    .risk-number {
+      font-size: 1.25rem;
+
+      font-weight: 750;
+
+      color: #dc2626;
+    }
+
+    /* CHAT */
+
+    .chat-card {
+      margin-top: 30px;
+
+      padding: 20px;
+    }
+
+    #conversation {
+      display: grid;
+
+      gap: 12px;
+
+      max-height: 600px;
+
+      overflow-y: auto;
+
+      margin-bottom: 16px;
+    }
+
+    .bubble {
+      padding: 15px 17px;
+
+      border-radius: 14px;
+
+      line-height: 1.65;
+
+      max-width: 92%;
+    }
+
+    .assistant {
+      background: #eff6ff;
+
+      color: #1e3a8a;
+    }
+
+    .user {
+      background: #172554;
+
+      color: white;
+
+      justify-self: end;
+    }
+
+    .assistant h3 {
+      margin:
+        10px 0 6px;
+    }
+
+    .assistant ul,
+    .assistant ol {
+      margin-top: 6px;
+
+      padding-left: 22px;
+    }
+
+    .assistant li {
+      margin-bottom: 5px;
+    }
+
+    .assistant strong {
+      color: #172554;
+    }
+
+    form {
+      display: flex;
+
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+
+      min-width: 0;
+
+      border:
+        1px solid #94a3b8;
+
+      padding: 15px;
+
+      border-radius: 12px;
+
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+
+      background: #2563eb;
+
+      color: white;
+
+      border-radius: 12px;
+
+      padding:
+        0 19px;
+
+      cursor: pointer;
+
+      font:
+        600 1rem
+        inherit;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+
+      cursor: wait;
+    }
+
+    .prompts {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin-top: 14px;
+    }
+
+    .prompts button {
+      background: #f1f5f9;
+
+      color: #334155;
+
+      padding:
+        9px 11px;
+
+      font-size: 0.84rem;
+    }
+
+    .prompts button:hover {
+      background: #e2e8f0;
+    }
+
+    .error {
+      background: #fef2f2;
+
+      color: #991b1b;
+    }
+
+    .loading {
+      color: #64748b;
+
+      font-size: 0.9rem;
+    }
+
+    .quality {
+      color: #64748b;
+
+      font-size: 0.8rem;
+
+      margin-top: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .kpis {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        width:
+          calc(100% - 20px);
+
+        padding-top: 28px;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      form {
+        flex-direction: column;
+      }
+
+      button {
+        min-height: 46px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<main>
+
+  <header>
+    <div class="eyebrow">
+      Live monday.com intelligence
+    </div>
+
+    <h1>
+      Founder BI
+    </h1>
+
+    <p>
+      Executive view across sales
+      and operations. Data is read
+      live from monday.com.
+    </p>
+  </header>
+
+
+  <!-- KPI SECTION -->
+
+  <section class="section">
+
+    <div class="section-title">
+      <h2>
+        Executive overview
+      </h2>
+
+      <span
+        class="muted"
+        id="quarter"
+      >
+        Loading...
+      </span>
+    </div>
+
+    <div
+      class="kpis"
+      id="kpis"
+    >
+      <div class="kpi">
+        <div class="kpi-label">
+          Pipeline
         </div>
-        <div id="quality"></div>
-      </section>
-    </main>
-    <script>
-      const form = document.querySelector('#chat-form'); const input = document.querySelector('#question'); const messages = document.querySelector('#conversation'); const send = document.querySelector('#send'); const quality = document.querySelector('#quality');
-      function addMessage(text, type) { const item = document.createElement('div'); item.className = `bubble ${type}`; item.textContent = text; messages.appendChild(item); item.scrollIntoView({ behavior: 'smooth', block: 'end' }); }
-      async function submitQuestion(question) { if (!question.trim()) return; addMessage(question, 'user'); input.value=''; send.disabled=true; send.textContent='Thinking…'; quality.textContent=''; try { const result = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question}) }); const data = await result.json(); if (!result.ok) throw new Error(data.error); addMessage(data.answer, 'assistant'); const issues = Object.entries(data.dataQuality).filter(([,value]) => value > 0).map(([key,value]) => `${key.replaceAll('_',' ')}: ${value}`); quality.textContent = issues.length ? `Data quality notes — ${issues.join(' · ')}` : 'Data quality checks passed for the fields used.'; } catch(error) { addMessage(error.message || 'Unable to answer right now.', 'error'); } finally { send.disabled=false; send.textContent='Ask'; input.focus(); } }
-      form.addEventListener('submit', (event) => { event.preventDefault(); submitQuestion(input.value); }); document.querySelectorAll('[data-question]').forEach(button => button.addEventListener('click', () => submitQuestion(button.dataset.question)));
-    </script>
-  </body>
+
+        <div
+          class="kpi-value"
+          id="pipeline"
+        >
+          —
+        </div>
+
+        <div class="kpi-sub">
+          Deals with a value
+        </div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">
+          Weighted pipeline
+        </div>
+
+        <div
+          class="kpi-value"
+          id="weighted"
+        >
+          —
+        </div>
+
+        <div class="kpi-sub">
+          Probability weighted
+        </div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">
+          Deal risks
+        </div>
+
+        <div
+          class="kpi-value"
+          id="dealRisks"
+        >
+          —
+        </div>
+
+        <div class="kpi-sub">
+          Requiring attention
+        </div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">
+          Work-order risks
+        </div>
+
+        <div
+          class="kpi-value"
+          id="workOrderRisks"
+        >
+          —
+        </div>
+
+        <div class="kpi-sub">
+          Requiring attention
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- SALES -->
+
+  <section class="section">
+
+    <div class="section-title">
+      <h2>
+        Sales pipeline
+      </h2>
+    </div>
+
+    <div class="two-column">
+
+      <div class="card">
+
+        <div class="card-header">
+          <h3>
+            Pipeline by sector
+          </h3>
+        </div>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>
+                  Sector
+                </th>
+
+                <th class="number">
+                  Deals
+                </th>
+
+                <th class="number">
+                  Pipeline
+                </th>
+
+                <th class="number">
+                  Weighted
+                </th>
+              </tr>
+            </thead>
+
+            <tbody
+              id="sectorTable"
+            ></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="card-header">
+          <h3>
+            Pipeline concentration
+          </h3>
+        </div>
+
+        <div
+          class="card-body"
+          id="sectorBars"
+        >
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- OPERATIONS -->
+
+  <section class="section">
+
+    <div class="section-title">
+      <h2>
+        Operations
+      </h2>
+    </div>
+
+    <div class="two-column">
+
+      <div class="card">
+
+        <div class="card-header">
+          <h3>
+            Work orders requiring attention
+          </h3>
+        </div>
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>
+                  Work order
+                </th>
+
+                <th>
+                  Sector
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  End date
+                </th>
+
+                <th class="number">
+                  Value
+                </th>
+
+                <th>
+                  Risk
+                </th>
+              </tr>
+            </thead>
+
+            <tbody
+              id="workOrderTable"
+            ></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="card-header">
+          <h3>
+            Risk overview
+          </h3>
+        </div>
+
+        <div
+          class="card-body"
+          id="riskOverview"
+        >
+          Loading...
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- DATA QUALITY -->
+
+  <section class="section">
+
+    <div class="card">
+
+      <div class="card-header">
+        <h3>
+          Data quality
+        </h3>
+      </div>
+
+      <div
+        class="card-body"
+        id="dataQuality"
+      >
+        Loading...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CHAT -->
+
+  <section class="section chat-card card">
+
+    <div class="section-title">
+      <h2>
+        Ask Founder BI
+      </h2>
+
+      <span class="muted">
+        Ask a business question
+      </span>
+    </div>
+
+    <div
+      id="conversation"
+    >
+      <div class="bubble assistant">
+        What would you like to know?
+        Try a suggested question below.
+      </div>
+    </div>
+
+    <form id="chat-form">
+
+      <input
+        id="question"
+        placeholder="Which deals are at risk?"
+        autocomplete="off"
+      />
+
+      <button
+        id="send"
+        type="submit"
+      >
+        Ask
+      </button>
+
+    </form>
+
+    <div class="prompts">
+
+      <button
+        type="button"
+        data-question="How is our pipeline looking for the energy sector this quarter?"
+      >
+        Energy pipeline
+      </button>
+
+      <button
+        type="button"
+        data-question="Which deals appear to be at risk and why?"
+      >
+        Deals at risk
+      </button>
+
+      <button
+        type="button"
+        data-question="Which work orders need leadership attention?"
+      >
+        Work-order risks
+      </button>
+
+      <button
+        type="button"
+        data-question="Create a concise leadership update across sales and operations."
+      >
+        Leadership update
+      </button>
+
+    </div>
+
+    <div
+      class="quality"
+      id="quality"
+    ></div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+  const $ = (selector) =>
+    document.querySelector(selector);
+
+
+  function formatMoney(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return "₹0";
+    }
+
+    const num = Number(value);
+
+    if (num >= 1000000000) {
+      return (
+        "₹" +
+        (num / 1000000000)
+          .toFixed(2) +
+        "B"
+      );
+    }
+
+    if (num >= 1000000) {
+      return (
+        "₹" +
+        (num / 1000000)
+          .toFixed(1) +
+        "M"
+      );
+    }
+
+    if (num >= 1000) {
+      return (
+        "₹" +
+        (num / 1000)
+          .toFixed(1) +
+        "K"
+      );
+    }
+
+    return (
+      "₹" +
+      Math.round(num)
+        .toLocaleString("en-IN")
+    );
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+
+  function renderDashboard(data) {
+
+    $("#quarter").textContent =
+      data.quarter;
+
+
+    $("#pipeline").textContent =
+      formatMoney(
+        data.kpis.totalPipeline
+      );
+
+
+    $("#weighted").textContent =
+      formatMoney(
+        data.kpis.weightedPipeline
+      );
+
+
+    $("#dealRisks").textContent =
+      data.kpis.dealRisks;
+
+
+    $("#workOrderRisks").textContent =
+      data.kpis.workOrderRisks;
+
+
+    /* SECTOR TABLE */
+
+    const sectorTable =
+      $("#sectorTable");
+
+    sectorTable.innerHTML =
+      data.sectors
+        .map(
+          (sector) => `
+            <tr>
+              <td>
+                <strong>
+                  ${escapeHtml(
+                    sector.sector
+                  )}
+                </strong>
+              </td>
+
+              <td class="number">
+                ${sector.deals}
+              </td>
+
+              <td class="number">
+                ${formatMoney(
+                  sector.pipeline
+                )}
+              </td>
+
+              <td class="number">
+                ${formatMoney(
+                  sector.weightedPipeline
+                )}
+              </td>
+            </tr>
+          `
+        )
+        .join("");
+
+
+    /* SECTOR BARS */
+
+    const maxPipeline =
+      Math.max(
+        ...data.sectors.map(
+          (s) => s.pipeline
+        ),
+        1
+      );
+
+    $("#sectorBars").innerHTML =
+      data.sectors
+        .slice(0, 8)
+        .map(
+          (sector) => {
+
+            const width =
+              Math.max(
+                3,
+                (sector.pipeline /
+                  maxPipeline) *
+                  100
+              );
+
+            return `
+              <div class="sector-row">
+
+                <div class="sector-top">
+
+                  <span class="sector-name">
+                    ${escapeHtml(
+                      sector.sector
+                    )}
+                  </span>
+
+                  <span class="sector-value">
+                    ${formatMoney(
+                      sector.pipeline
+                    )}
+                  </span>
+
+                </div>
+
+                <div class="bar">
+
+                  <div
+                    class="bar-fill"
+                    style="width:${width}%"
+                  ></div>
+
+                </div>
+
+              </div>
+            `;
+          }
+        )
+        .join("");
+
+
+    /* WORK ORDERS */
+
+    $("#workOrderTable")
+      .innerHTML =
+      data.workOrderRisks
+        .map(
+          (workOrder) => `
+            <tr>
+
+              <td>
+                <strong>
+                  ${escapeHtml(
+                    workOrder.name
+                  )}
+                </strong>
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  workOrder.sector
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  workOrder.status
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  workOrder.endDate ||
+                  "Missing"
+                )}
+              </td>
+
+              <td class="number">
+                ${formatMoney(
+                  workOrder.amount
+                )}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  workOrder.risk
+                )}
+              </td>
+
+            </tr>
+          `
+        )
+        .join("");
+
+
+    /* RISK OVERVIEW */
+
+    $("#riskOverview")
+      .innerHTML = `
+
+        <div class="risk-list">
+
+          <div class="risk-item">
+
+            <div>
+              <div class="risk-name">
+                Deal risks
+              </div>
+
+              <div class="risk-detail">
+                Sales opportunities
+                requiring review
+              </div>
+            </div>
+
+            <div class="risk-number">
+              ${data.kpis.dealRisks}
+            </div>
+
+          </div>
+
+
+          <div class="risk-item">
+
+            <div>
+              <div class="risk-name">
+                Work-order risks
+              </div>
+
+              <div class="risk-detail">
+                Operational issues
+              </div>
+            </div>
+
+            <div class="risk-number">
+              ${data.kpis.workOrderRisks}
+            </div>
+
+          </div>
+
+
+          <div class="risk-item">
+
+            <div>
+              <div class="risk-name">
+                Receivables
+              </div>
+
+              <div class="risk-detail">
+                Outstanding amount
+              </div>
+            </div>
+
+            <div class="risk-number">
+              ${formatMoney(
+                data.kpis
+                  .outstandingReceivables
+              )}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+
+    /* DATA QUALITY */
+
+    const d =
+      data.dataQuality.deals;
+
+    const w =
+      data.dataQuality.workOrders;
+
+    $("#dataQuality").innerHTML = `
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>
+                Dataset
+              </th>
+
+              <th>
+                Missing sector
+              </th>
+
+              <th>
+                Missing amount
+              </th>
+
+              <th>
+                Missing probability
+              </th>
+
+              <th>
+                Missing date
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+
+              <td>
+                <strong>
+                  Deals
+                </strong>
+              </td>
+
+              <td>
+                ${d.sector}
+              </td>
+
+              <td>
+                ${d.amount}
+              </td>
+
+              <td>
+                ${d.probability}
+              </td>
+
+              <td>
+                ${d.closeDate}
+              </td>
+
+            </tr>
+
+            <tr>
+
+              <td>
+                <strong>
+                  Work orders
+                </strong>
+              </td>
+
+              <td>
+                ${w.sector}
+              </td>
+
+              <td>
+                ${w.amount}
+              </td>
+
+              <td>
+                —
+              </td>
+
+              <td>
+                ${w.endDate}
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+    `;
+  }
+
+
+  async function loadDashboard() {
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/dashboard"
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Unable to load dashboard."
+        );
+      }
+
+      renderDashboard(data);
+
+    } catch (error) {
+
+      $("#quarter").textContent =
+        "Dashboard unavailable";
+
+      $("#sectorBars").innerHTML =
+        `<div class="error">
+          ${escapeHtml(
+            error.message
+          )}
+        </div>`;
+
+    }
+  }
+
+
+  /* =====================================================
+     CHAT
+  ===================================================== */
+
+  const form =
+    $("#chat-form");
+
+  const input =
+    $("#question");
+
+  const messages =
+    $("#conversation");
+
+  const send =
+    $("#send");
+
+  const quality =
+    $("#quality");
+
+
+  function renderMarkdown(text) {
+
+    const lines =
+      String(text || "")
+        .split("\n");
+
+    let html = "";
+
+    let listType = null;
+
+
+    function closeList() {
+
+      if (listType) {
+        html +=
+          `</${listType}>`;
+
+        listType = null;
+      }
+    }
+
+
+    for (
+      const rawLine of lines
+    ) {
+
+      const line =
+        rawLine.trim();
+
+
+      if (!line) {
+        closeList();
+        continue;
+      }
+
+
+      if (
+        line.startsWith("### ")
+      ) {
+
+        closeList();
+
+        html +=
+          `<h3>${escapeHtml(
+            line.slice(4)
+          )}</h3>`;
+
+        continue;
+      }
+
+
+      if (
+        line.startsWith("## ")
+      ) {
+
+        closeList();
+
+        html +=
+          `<h3>${escapeHtml(
+            line.slice(3)
+          )}</h3>`;
+
+        continue;
+      }
+
+
+      if (
+        line.startsWith("**") &&
+        line.endsWith("**")
+      ) {
+
+        closeList();
+
+        html +=
+          `<h3>${escapeHtml(
+            line.slice(2, -2)
+          )}</h3>`;
+
+        continue;
+      }
+
+
+      if (
+        line.startsWith("- ")
+      ) {
+
+        if (listType !== "ul") {
+
+          closeList();
+
+          html += "<ul>";
+
+          listType = "ul";
+        }
+
+        html +=
+          `<li>${formatInline(
+            line.slice(2)
+          )}</li>`;
+
+        continue;
+      }
+
+
+      const numbered =
+        line.match(
+          /^(\d+)\.\s+(.*)$/
+        );
+
+      if (numbered) {
+
+        if (listType !== "ol") {
+
+          closeList();
+
+          html += "<ol>";
+
+          listType = "ol";
+        }
+
+        html +=
+          `<li>${formatInline(
+            numbered[2]
+          )}</li>`;
+
+        continue;
+      }
+
+
+      closeList();
+
+      html +=
+        `<p>${formatInline(
+          line
+        )}</p>`;
+    }
+
+
+    closeList();
+
+    return html;
+  }
+
+
+  function formatInline(text) {
+
+    let escaped =
+      escapeHtml(text);
+
+    escaped =
+      escaped.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+      );
+
+    return escaped;
+  }
+
+
+  function addMessage(
+    text,
+    type
+  ) {
+
+    const item =
+      document.createElement(
+        "div"
+      );
+
+    item.className =
+      `bubble ${type}`;
+
+    if (
+      type === "assistant"
+    ) {
+
+      item.innerHTML =
+        renderMarkdown(text);
+
+    } else {
+
+      item.textContent =
+        text;
+    }
+
+    messages.appendChild(
+      item
+    );
+
+    item.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }
+
+
+  async function submitQuestion(
+    question
+  ) {
+
+    if (!question.trim())
+      return;
+
+
+    addMessage(
+      question,
+      "user"
+    );
+
+    input.value = "";
+
+    send.disabled = true;
+
+    send.textContent =
+      "Thinking…";
+
+    quality.textContent =
+      "";
+
+
+    try {
+
+      const result =
+        await fetch(
+          "/api/chat",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              message: question,
+            }),
+          }
+        );
+
+
+      const data =
+        await result.json();
+
+
+      if (!result.ok) {
+        throw new Error(
+          data.error
+        );
+      }
+
+
+      addMessage(
+        data.answer,
+        "assistant"
+      );
+
+
+      if (
+        data.dataQuality
+      ) {
+
+        const issues =
+          Object.entries(
+            data.dataQuality
+          )
+            .flatMap(
+              ([dataset, values]) =>
+                Object.entries(values)
+                  .filter(
+                    ([, value]) =>
+                      typeof value ===
+                        "number" &&
+                      value > 0
+                  )
+                  .map(
+                    ([key, value]) =>
+                      `${dataset} ${key}: ${value}`
+                  )
+            );
+
+
+        quality.textContent =
+          issues.length
+            ? `Data quality — ${issues.join(
+                " · "
+              )}`
+            : "Data quality checks passed.";
+      }
+
+    } catch (error) {
+
+      addMessage(
+        error.message ||
+          "Unable to answer right now.",
+        "error"
+      );
+
+    } finally {
+
+      send.disabled = false;
+
+      send.textContent =
+        "Ask";
+
+      input.focus();
+    }
+  }
+
+
+  form.addEventListener(
+    "submit",
+    (event) => {
+
+      event.preventDefault();
+
+      submitQuestion(
+        input.value
+      );
+    }
+  );
+
+
+  document
+    .querySelectorAll(
+      "[data-question]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () =>
+            submitQuestion(
+              button.dataset
+                .question
+            )
+        );
+      }
+    );
+
+
+  /* LOAD DASHBOARD */
+
+  loadDashboard();
+
+</script>
+
+</body>
 </html>
